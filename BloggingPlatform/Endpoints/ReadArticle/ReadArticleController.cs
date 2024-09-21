@@ -19,11 +19,21 @@ namespace BloggingPlatform.Endpoints.ReadArticle
             {
                 connection.Open();
                 DbCommand command = connection.CreateCommand();
-                command.CommandText = $"SELECT * FROM articles WHERE id = {id}";//
-                DbDataReader reader = command.ExecuteReader();
+                command.CommandText = @"SELECT *
+                FROM Articles
+                WHERE id = $id";
 
-                object o = reader.GetValue(2);
-                return Ok(o);
+                command.Parameters.Add(id);
+                using (DbDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var o = reader.GetValue(0);
+                        Console.WriteLine(o);
+                    }
+                }
+                
+                return Ok();
             }                       
         }        
     }
