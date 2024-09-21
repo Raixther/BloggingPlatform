@@ -13,21 +13,18 @@ namespace BloggingPlatform.Endpoints.ReadArticle
     public class ReadArticleController : ControllerBase
     {
         [HttpGet]
-        public ActionResult<Article> ReadArticle(int id)
+        public ActionResult<object> ReadArticle(int id)
         {
-            SqliteConnection connection = new(connectionString: "Data Source = MyDb.db;");
-            DbCommand command = connection.CreateCommand();
-            command.CommandText = "$SELECT * FROM articles WHERE id = {id}";//
-            DbDataReader reader = command.ExecuteReader();
+            using (SqliteConnection connection = new(connectionString: "Data Source = MyDb.db;"))
+            {
+                connection.Open();
+                DbCommand command = connection.CreateCommand();
+                command.CommandText = $"SELECT * FROM articles WHERE id = {id}";//
+                DbDataReader reader = command.ExecuteReader();
 
-            
-
-
-            
-           
-           
-            throw new NotImplementedException();
-        }
-        
+                object o = reader.GetValue(2);
+                return Ok(o);
+            }                       
+        }        
     }
 }
