@@ -18,12 +18,12 @@ namespace BloggingPlatform.Endpoints.ReadArticle
             using (SqliteConnection connection = new(connectionString: "Data Source = MyDb.db;"))
             {
                 connection.Open();
-                DbCommand command = connection.CreateCommand();
+                SqliteCommand command = connection.CreateCommand();
                 command.CommandText = @"SELECT *
                 FROM Articles
                 WHERE id = $id";
+                command.Parameters.Add(new SqliteParameter("id", id));
 
-                command.Parameters.Add(id);
                 using (DbDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
