@@ -1,6 +1,6 @@
-using BloggingPlatform.Endpoints.CreateArticle;
-
+using DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +10,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<CreateArticleDbContext>(cfg=>cfg.UseSqlite(
-connectionString:"Data Source = MyDb.db;"));
+builder.Services.AddDbContext<AppDbContext>(cfg =>
+cfg.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"),opt=>opt.MigrationsAssembly("Migrations")));
 
 var app = builder.Build();
 
