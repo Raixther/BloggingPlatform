@@ -12,9 +12,9 @@ namespace Domain
         public string Text { get; set; } = string.Empty;
         public int AuthorId { get; set; }
         public int ArticleId { get; set; }
+        public Article Article { get; set; }
 
-        List<Author> authors = new List<Author>();
-
+        public List<Author> Authors { get; set; } = new List<Author>();
         protected Comment()
         {
                 

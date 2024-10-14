@@ -3,19 +3,21 @@
     public class Article
     {
         public int Id { get; set; }
-        public int AuthorId { get; set; }
+        public int AuthorId { get; set;}
+        public Author Author { get; set; } = new(string.Empty);
         public string Title { get; set; } = string.Empty;
         public string Text { get; set; } = string.Empty;
         public int Likes { get; set; }
 
-        public DateTime CreationTime { get; set; }
+        public List<Comment> Comments { get; set; } = new();
+
+        public DateTime CreationTime { get; set; } = DateTime.UtcNow;
 
         protected Article()
         {
                 
         }
 
-        public List<Comment> Comments { get; set; } = new();
         public Article(string tittle, string text)
         {
             Title = tittle;

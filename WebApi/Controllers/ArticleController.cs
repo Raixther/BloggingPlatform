@@ -14,9 +14,9 @@ namespace WebApi.Controllers
 
         public ArticleController(AppDbContext dbContext)
         {
-            _dbContext = dbContext;   
+            _dbContext = dbContext;
         }
-        [HttpGet]
+        [HttpGet("Author")]
         public ActionResult<IEnumerable<Article>> GetArticlesByAuthor(string authorName)
         {
 
@@ -24,18 +24,36 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
+        [HttpGet("TimeSpan")]
         public ActionResult<IEnumerable<Article>> GetArticlesByTimeSpan(TimeSpan timeSpan)
         {
             throw new NotImplementedException();
         }
 
         [HttpPost]
-        public ActionResult CreateArticle(string text, string title, Author author)
+        public ActionResult CreateArticle(string text, string title, string authorName)
         {
-            throw new NotImplementedException();
-        }
+            Article article = new(title, text);
+           
+            if (authorName is null)
+                return BadRequest();
+            if (!_dbContext.Authors.Contains(_dbContext.Authors.FirstOrDefault(a => a.Name == authorName)))
+            {
+                Author author = new Author(authorName);
+                article.Author = author;
+                _dbContext.Articles.Add(article);
+                _dbContext.SaveChanges();
+                return Ok(article);
+            }
+            else
+            {
+                _dbContext.Articles.Add(article);
+                _dbContext.SaveChanges();
+                return Ok();
+            }
 
+        }
+          
         [HttpDelete]
         public ActionResult DeleteArticleById(int id)
         {

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Migrations.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240930082518_Initial")]
+    [Migration("20241004141045_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -24,6 +24,21 @@ namespace Migrations.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("AuthorComment", b =>
+                {
+                    b.Property<int>("AuthorsId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CommentsId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("AuthorsId", "CommentsId");
+
+                    b.HasIndex("CommentsId");
+
+                    b.ToTable("AuthorComment");
+                });
 
             modelBuilder.Entity("Domain.Article", b =>
                 {
@@ -37,7 +52,7 @@ namespace Migrations.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreationTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("date");
 
                     b.Property<int>("Likes")
                         .HasColumnType("integer");
@@ -96,33 +111,44 @@ namespace Migrations.Migrations
 
                     b.HasIndex("ArticleId");
 
-                    b.HasIndex("AuthorId");
-
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("Domain.Article", b =>
+            modelBuilder.Entity("AuthorComment", b =>
                 {
                     b.HasOne("Domain.Author", null)
-                        .WithMany("Articles")
-                        .HasForeignKey("AuthorId")
+                        .WithMany()
+                        .HasForeignKey("AuthorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Comment", null)
+                        .WithMany()
+                        .HasForeignKey("CommentsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domain.Article", b =>
+                {
+                    b.HasOne("Domain.Author", "Author")
+                        .WithMany("Articles")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+                });
+
             modelBuilder.Entity("Domain.Comment", b =>
                 {
-                    b.HasOne("Domain.Article", null)
+                    b.HasOne("Domain.Article", "Article")
                         .WithMany("Comments")
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Author", null)
-                        .WithMany("comments")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Article");
                 });
 
             modelBuilder.Entity("Domain.Article", b =>
@@ -133,8 +159,6 @@ namespace Migrations.Migrations
             modelBuilder.Entity("Domain.Author", b =>
                 {
                     b.Navigation("Articles");
-
-                    b.Navigation("comments");
                 });
 #pragma warning restore 612, 618
         }

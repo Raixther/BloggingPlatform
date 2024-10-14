@@ -35,7 +35,7 @@ namespace Migrations.Migrations
                     Title = table.Column<string>(type: "text", nullable: false),
                     Text = table.Column<string>(type: "text", nullable: false),
                     Likes = table.Column<int>(type: "integer", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreationTime = table.Column<DateTime>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,10 +67,28 @@ namespace Migrations.Migrations
                         principalTable: "Articles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AuthorComment",
+                columns: table => new
+                {
+                    AuthorsId = table.Column<int>(type: "integer", nullable: false),
+                    CommentsId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuthorComment", x => new { x.AuthorsId, x.CommentsId });
                     table.ForeignKey(
-                        name: "FK_Comments_Authors_AuthorId",
-                        column: x => x.AuthorId,
+                        name: "FK_AuthorComment_Authors_AuthorsId",
+                        column: x => x.AuthorsId,
                         principalTable: "Authors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AuthorComment_Comments_CommentsId",
+                        column: x => x.CommentsId,
+                        principalTable: "Comments",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -81,19 +99,22 @@ namespace Migrations.Migrations
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AuthorComment_CommentsId",
+                table: "AuthorComment",
+                column: "CommentsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Comments_ArticleId",
                 table: "Comments",
                 column: "ArticleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comments_AuthorId",
-                table: "Comments",
-                column: "AuthorId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AuthorComment");
+
             migrationBuilder.DropTable(
                 name: "Comments");
 
