@@ -21,8 +21,9 @@ namespace DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Article>().Property<DateTime>(a=>a.CreationTime).HasColumnType("date");           
-            
+            modelBuilder.Entity<Article>().Property<DateTime>(a=>a.CreationTime).HasColumnType("date");
+            modelBuilder.Entity<Article>().HasIndex(a => a.Title);
+            modelBuilder.Entity<Author>().HasIndex(a => a.Name);
             modelBuilder.Entity<Article>().HasOne(a=>a.Author).WithMany(a=>a.Articles).HasForeignKey(a=>a.AuthorId);
             modelBuilder.Entity<Comment>().HasOne(a => a.Article).WithMany(a => a.Comments).HasForeignKey(a => a.ArticleId);
 

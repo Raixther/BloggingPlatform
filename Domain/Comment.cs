@@ -13,15 +13,16 @@ namespace Domain
         public int AuthorId { get; set; }
         public int ArticleId { get; set; }
         public Article Article { get; set; }
-
-        public List<Author> Authors { get; set; } = new List<Author>();
+        public Author Author { get; init; }
         protected Comment()
         {
                 
         }
-        public Comment(string text)
+        public Comment(string text, string authorName)
         {
             Text = text;
+            Author = new(authorName);
+          
         }
     }
 }
